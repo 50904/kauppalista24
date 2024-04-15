@@ -1,2 +1,2 @@
 # kauppalista24
-Kauppalista-appi koodattuna Sveltekitillä ja PocketBase-taustjärjestelmällä
+Kauppalista sovellus koodattuna Sveltekitillä ja PocketBase-taustjärjestelmällä
