@@ -15,8 +15,18 @@ Kun ladattu:
 }
 
 Jos virhe
+{
+    tila: 'virhe',
+    virhe: 'Virheen teksti',
+}
+*/
+export fuction pbStore(kokoelmaNimi) {
+    const taustaStore = writable({tila: 'ladataan'}
 
-
+    const kauppalistaAsiaPromise = lataaKauppalista(LISTA_ID);
+    kauppalistaAsiatPromise.them({kauppalistaAsiat})
+    )    
+}
 
 
 

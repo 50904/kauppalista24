@@ -3,6 +3,8 @@
 
     import Asia from './Asia.svelte';
 
+    import { ilmoitus } from '../store';
+
     export let asiat;
 
     const dispatch = createEventDispatcher();
