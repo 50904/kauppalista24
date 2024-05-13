@@ -1,26 +1,8 @@
-import {fail} from '@sveltejs/kit';
+import {lataaKauppalista} from '$lib/api';
 
-const asiat = ['Leipä', 'Tomaatti', 'Kurkku'];
+const LISTA_ID = '9j3zwlkpz05sti8';  // TODO: Poista kovakoodattu LISTA_ID
 
-export function load() {
-    return {asiat};
+export async function load() {
+    const asiat = await lataaKauppalista(LISTA_ID);
+    return {asiat, LISTA_ID};
 }
-
-export const actions = {
-    lisääAsia: async ({request}) => {
-        const data = await request.formData();
-        const asia = data.get('asia')?.trim() ?? '';
-        if (!asia) {
-            return fail(422, {
-                error: 'Asia ei saa olla tyhjä',
-            });
-        }
-        if (asiat.includes(asia)) {
-            return fail(422, {
-                asia,
-                error: 'Asia oli jo listalla',
-            });
-        }
-        asiat.push(asia);
-    },
-};
