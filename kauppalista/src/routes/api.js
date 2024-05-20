@@ -11,27 +11,25 @@ export async function lataaKauppalista(listaId) {
     return response.items;
 }
 
-export async function luoKauppalistanAsia(listaId, teksti) {
-    if (!teksti) throw Error('Teksti ei saa olla tyhjä');
+export async function luoKauppalistanAsia(listaId, asia) {
+    if (!asia.teksti) throw Error('Teksti ei saa olla tyhjä');
 
     const pb = getPocketBase();
-    const asia = await haeKauppalistanAsia(pb, listaId, teksti);
-    if (asia) throw Error('Sama asia oli jo listalla');
-    await pb.collection('kauppalistan_asiat').create({lista: listaId, teksti});
+    const vanhaAsia = await haeKauppalistanAsia(pb, listaId, asia.teksti);
+    if (vanhaAsia) throw Error('Sama asia oli jo listalla');
+    await pb
+        .collection('kauppalistan_asiat')
+        .create({...asia, lista: listaId});
 }
 
-export async function poistaKauppalistanAsia(listaId, teksti) {
+export async function poistaKauppalistanAsia(asia) {
     const pb = getPocketBase();
-    const asia = await haeKauppalistanAsia(pb, listaId, teksti);
-    if (!asia) return;
     await pb.collection('kauppalistan_asiat').delete(asia.id);
 }
 
-export async function asetaKauppalistanAsianValmis(listaId, teksti, valmis) {
+export async function päivitäKauppalistanAsia(asia) {
     const pb = getPocketBase();
-    const asia = await haeKauppalistanAsia(pb, listaId, teksti);
-    if (!asia) return;
-    await pb.collection('kauppalistan_asiat').update(asia.id, {valmis});
+    await pb.collection('kauppalistan_asiat').update(asia.id, asia);
 }
 
 async function haeKauppalistanAsia(pb, listaId, teksti) {
@@ -44,6 +42,16 @@ async function haeKauppalistanAsia(pb, listaId, teksti) {
     });
     // kolmoisoperaattori: EHTO ? ARVO_JOS_EHTO_TOSI : ARVO_JOS_EHTO_EPÄTOSI
     return response.items.length ? response.items[0] : null;
+}
+
+export async function kuunteleMuutoksia(listaId, callback) {
+    const pb = getPocketBase();
+    const asiat = pb.collection('kauppalistan_asiat');
+    return await asiat.subscribe('*', (data) => {
+        if (data.record.lista === listaId) {
+            callback(data);
+        }
+    });
 }
 
 function getPocketBase() {
